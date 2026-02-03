@@ -1,9 +1,17 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
 
   DatabaseHelper._init();
+
+  Future<Database> _initDB(String filePath) async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, filePath);
+
+    return await openDatabase(path, version: 1, onCreate: _createDB);
+  }
 
   Future _createDB(Database db, int version) async {
     const idType = 'TEXT PRIMARY KEY';
