@@ -64,4 +64,14 @@ class DatabaseHelper {
   )
 ''');
   }
+
+  // CRUD Operations
+  Future<void> insertAccount(Account account) async {
+    final db = await instance.database;
+    await db.insert(
+      'accounts',
+      account.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 }
