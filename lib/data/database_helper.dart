@@ -96,4 +96,10 @@ class DatabaseHelper {
       await txn.delete('accounts', where: 'id = ?', whereArgs: [accountId]);
     });
   }
+
+  Future<List<Account>> getAllAccounts() async {
+    final db = await instance.database;
+    final result = await db.query('accounts');
+    return result.map((json) => Account.fromMap(json)).toList();
+  }
 }
