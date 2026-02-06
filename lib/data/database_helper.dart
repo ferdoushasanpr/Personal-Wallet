@@ -84,4 +84,16 @@ class DatabaseHelper {
       whereArgs: [account.id],
     );
   }
+
+  Future<void> deleteAccount(String accountId) async {
+    final db = await instance.database;
+    await db.transaction((txn) async {
+      await txn.delete(
+        'records',
+        where: 'accountId = ? OR targetAccountId = ?',
+        whereArgs: [accountId, accountId],
+      );
+      await txn.delete('accounts', where: 'id = ?', whereArgs: [accountId]);
+    });
+  }
 }
