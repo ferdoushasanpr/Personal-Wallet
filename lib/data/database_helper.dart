@@ -121,4 +121,9 @@ class DatabaseHelper {
       whereArgs: [record.id],
     );
   }
+
+  Future<void> deleteRecord(String recordId) async {
+    final db = await instance.database;
+    await db.delete('records', where: 'id = ?', whereArgs: [recordId]);
+  }
 }
