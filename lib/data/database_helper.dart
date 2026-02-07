@@ -102,4 +102,13 @@ class DatabaseHelper {
     final result = await db.query('accounts');
     return result.map((json) => Account.fromMap(json)).toList();
   }
+
+  Future<void> insertRecord(TransactionRecord record) async {
+    final db = await instance.database;
+    await db.insert(
+      'records',
+      record.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 }
