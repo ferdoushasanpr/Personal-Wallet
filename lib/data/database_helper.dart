@@ -156,4 +156,18 @@ class DatabaseHelper {
     );
     return res.isNotEmpty ? res.first : null;
   }
+
+  // Update or Insert the stats
+  Future<void> updateWeeklyStats(Map<String, dynamic> data) async {
+    final db = await instance.database;
+    // We always use ID 1 to ensure we only ever have one "current" week
+    Map<String, dynamic> row = Map.of(data);
+    row['id'] = 1;
+
+    await db.insert(
+      'weekly_calculator',
+      row,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 }
