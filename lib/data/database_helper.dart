@@ -111,4 +111,14 @@ class DatabaseHelper {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+  Future<int> updateRecord(TransactionRecord record) async {
+    final db = await instance.database;
+    return await db.update(
+      'records',
+      record.toMap(),
+      where: 'id = ?',
+      whereArgs: [record.id],
+    );
+  }
 }
