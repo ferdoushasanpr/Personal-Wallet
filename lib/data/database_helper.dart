@@ -126,4 +126,23 @@ class DatabaseHelper {
     final db = await instance.database;
     await db.delete('records', where: 'id = ?', whereArgs: [recordId]);
   }
+
+  Future<List<TransactionRecord>> getRecordsByAccount(String accountId) async {
+    final db = await instance.database;
+    // Get records where this account is either the source OR the target (for incoming transfers)
+    final DateTime thirtyDaysAgo = DateTime.now().subtract(
+      const Duration(days: 30),
+    );
+    final String cutoffDate = thirtyDaysAgo.toIso8601String();
+    final result = await db.query(
+      'records',
+      where: '''
+      (accountId = ? OR targetAccountId = ?)
+      AND date >= ?
+    ''',
+      whereArgs: [accountId, accountId, cutoffDate],
+      orderBy: 'date DESC',
+    );
+    return result.map((json) => TransactionRecord.fromMap(json)).toList();
+  }
 }
