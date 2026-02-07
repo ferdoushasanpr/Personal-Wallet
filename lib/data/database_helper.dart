@@ -145,4 +145,15 @@ class DatabaseHelper {
     );
     return result.map((json) => TransactionRecord.fromMap(json)).toList();
   }
+
+  // Fetch the single row of calculator data
+  Future<Map<String, dynamic>?> getWeeklyStats() async {
+    final db = await instance.database;
+    final res = await db.query(
+      'weekly_calculator',
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+    return res.isNotEmpty ? res.first : null;
+  }
 }
