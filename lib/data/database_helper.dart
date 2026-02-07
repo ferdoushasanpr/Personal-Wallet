@@ -170,4 +170,10 @@ class DatabaseHelper {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+  // Clear/Reset the stats
+  Future<void> deleteWeeklyStats() async {
+    final db = await instance.database;
+    await db.delete('weekly_calculator', where: 'id = ?', whereArgs: [1]);
+  }
 }
