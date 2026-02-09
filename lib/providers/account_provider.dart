@@ -37,6 +37,11 @@ class WalletNotifier extends StateNotifier<WalletState> {
     await DatabaseHelper.instance.insertAccount(newAccount);
     await loadAccounts();
   }
+
+  Future<void> editAccount(Account updatedAccount) async {
+    await DatabaseHelper.instance.updateAccount(updatedAccount);
+    await loadAccounts();
+  }
 }
 
 final walletProvider = StateNotifierProvider<WalletNotifier, WalletState>((
