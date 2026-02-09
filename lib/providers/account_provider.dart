@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 import '../data/database_helper.dart';
 import '../models/account.dart';
 
@@ -17,6 +18,24 @@ class WalletNotifier extends StateNotifier<WalletState> {
   Future<void> loadAccounts() async {
     final accounts = await DatabaseHelper.instance.getAllAccounts();
     state = WalletState(accounts: accounts, isLoading: false);
+  }
+
+  Future<void> addAccount(
+    String name,
+    String type,
+    int colorValue,
+    double initialBalance,
+  ) async {
+    final newAccount = Account(
+      id: const Uuid().v4(),
+      name: name,
+      type: type,
+      colorValue: colorValue,
+      initialBalance: initialBalance,
+      currentBalance: initialBalance,
+    );
+    await DatabaseHelper.instance.insertAccount(newAccount);
+    await loadAccounts();
   }
 }
 
