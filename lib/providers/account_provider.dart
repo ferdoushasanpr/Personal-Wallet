@@ -47,6 +47,53 @@ class WalletNotifier extends StateNotifier<WalletState> {
     await DatabaseHelper.instance.deleteAccount(accountId);
     await loadAccounts();
   }
+
+  Future<void> addTransaction(TransactionRecord record) async {
+    final db = DatabaseHelper.instance;
+    await db.insertRecord(record);
+
+    // Update Logic based on Clean Architecture (Use Cases)
+    // 1. Update Source Account
+    final sourceAccount = state.accounts.firstWhere(
+      (a) => a.id == record.accountId,
+    );
+    double newSourceBalance = sourceAccount.currentBalance;
+
+    if (record.type == RecordType.expense ||
+        record.type == RecordType.transfer) {
+      newSourceBalance -= record.amount;
+    } else if (record.type == RecordType.income) {
+      newSourceBalance += record.amount;
+    }
+
+    final updatedSource = Account(
+      id: sourceAccount.id,
+      name: sourceAccount.name,
+      type: sourceAccount.type,
+      colorValue: sourceAccount.colorValue,
+      initialBalance: sourceAccount.initialBalance,
+      currentBalance: newSourceBalance,
+    );
+    await db.updateAccount(updatedSource);
+
+    // 2. If Transfer, Update Target Account
+    if (record.type == RecordType.transfer && record.targetAccountId != null) {
+      final targetAccount = state.accounts.firstWhere(
+        (a) => a.id == record.targetAccountId,
+      );
+      final updatedTarget = Account(
+        id: targetAccount.id,
+        name: targetAccount.name,
+        type: targetAccount.type,
+        colorValue: targetAccount.colorValue,
+        initialBalance: targetAccount.initialBalance,
+        currentBalance: targetAccount.currentBalance + record.amount,
+      );
+      await db.updateAccount(updatedTarget);
+    }
+
+    await loadAccounts(); // Refresh UI
+  }
 }
 
 final walletProvider = StateNotifierProvider<WalletNotifier, WalletState>((
