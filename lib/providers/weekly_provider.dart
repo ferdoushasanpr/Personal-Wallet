@@ -68,4 +68,14 @@ class WeeklyCalcNotifier extends StateNotifier<WeeklyCalcState> {
     // Save to DB using the helper function we wrote
     await DatabaseHelper.instance.updateWeeklyStats(dbMap);
   }
+
+  // Matches your reset/delete pattern
+  Future<void> resetCalculator() async {
+    await DatabaseHelper.instance.deleteWeeklyStats();
+    state = WeeklyCalcState(
+      earns: List.filled(7, 0.0),
+      spends: List.filled(7, 0.0),
+      isLoading: false,
+    );
+  }
 }
