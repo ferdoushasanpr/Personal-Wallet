@@ -94,6 +94,38 @@ class WalletNotifier extends StateNotifier<WalletState> {
 
     await loadAccounts(); // Refresh UI
   }
+
+  Future<void> updateTransaction(
+    TransactionRecord oldRecord,
+    TransactionRecord newRecord,
+  ) async {
+    // 1. Revert the balance impact of the OLD record
+    final account = state.accounts.firstWhere(
+      (a) => a.id == oldRecord.accountId,
+    );
+    double balanceAfterRevert = account.currentBalance;
+
+    if (oldRecord.type == RecordType.income)
+      balanceAfterRevert -= oldRecord.amount;
+    else
+      balanceAfterRevert += oldRecord.amount;
+
+    // 2. Apply the balance impact of the NEW record
+    double finalBalance = balanceAfterRevert;
+    if (newRecord.type == RecordType.income)
+      finalBalance += newRecord.amount;
+    else
+      finalBalance -= newRecord.amount;
+
+    // 3. Update Database
+    await DatabaseHelper.instance.updateRecord(newRecord);
+    await DatabaseHelper.instance.updateAccount(
+      account.copyWith(currentBalance: finalBalance),
+    );
+
+    // 4. Refresh State
+    await loadAccounts();
+  }
 }
 
 final walletProvider = StateNotifierProvider<WalletNotifier, WalletState>((
