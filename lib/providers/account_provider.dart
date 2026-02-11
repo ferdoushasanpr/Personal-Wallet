@@ -42,6 +42,11 @@ class WalletNotifier extends StateNotifier<WalletState> {
     await DatabaseHelper.instance.updateAccount(updatedAccount);
     await loadAccounts();
   }
+
+  Future<void> deleteAccount(String accountId) async {
+    await DatabaseHelper.instance.deleteAccount(accountId);
+    await loadAccounts();
+  }
 }
 
 final walletProvider = StateNotifierProvider<WalletNotifier, WalletState>((
