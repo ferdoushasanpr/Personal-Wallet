@@ -126,6 +126,42 @@ class WalletNotifier extends StateNotifier<WalletState> {
     // 4. Refresh State
     await loadAccounts();
   }
+
+  // Inside WalletNotifier class
+  Future<void> removeTransaction(TransactionRecord record) async {
+    final db = DatabaseHelper.instance;
+
+    // 1. Delete the record from SQLite
+    await db.deleteRecord(record.id);
+
+    // 2. Revert the balance change on the account
+    final account = state.accounts.firstWhere((a) => a.id == record.accountId);
+    double revertedBalance = account.currentBalance;
+
+    if (record.type == RecordType.income) {
+      revertedBalance -= record.amount; // Remove income
+    } else if (record.type == RecordType.expense) {
+      revertedBalance += record.amount; // Add back expense
+    } else if (record.type == RecordType.transfer) {
+      revertedBalance += record.amount; // Add back transferred out money
+
+      // Also revert target account if it's a transfer
+      if (record.targetAccountId != null) {
+        final targetAccount = state.accounts.firstWhere(
+          (a) => a.id == record.targetAccountId,
+        );
+        final updatedTarget = targetAccount.copyWith(
+          currentBalance: targetAccount.currentBalance - record.amount,
+        );
+        await db.updateAccount(updatedTarget);
+      }
+    }
+
+    final updatedSource = account.copyWith(currentBalance: revertedBalance);
+    await db.updateAccount(updatedSource);
+
+    await loadAccounts();
+  }
 }
 
 final walletProvider = StateNotifierProvider<WalletNotifier, WalletState>((
