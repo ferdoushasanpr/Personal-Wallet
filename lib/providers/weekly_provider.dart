@@ -43,4 +43,29 @@ class WeeklyCalcNotifier extends StateNotifier<WeeklyCalcState> {
       state = state.copyWith(isLoading: false);
     }
   }
+
+  // Method to update a single value (Earn or Spend) for a specific day
+  Future<void> updateDayValue(int index, double value, bool isEarn) async {
+    final newEarns = [...state.earns];
+    final newSpends = [...state.spends];
+
+    if (isEarn) {
+      newEarns[index] = value;
+    } else {
+      newSpends[index] = value;
+    }
+
+    // Update UI State
+    state = state.copyWith(earns: newEarns, spends: newSpends);
+
+    // Prepare data for DatabaseHelper
+    Map<String, dynamic> dbMap = {};
+    for (int i = 0; i < 7; i++) {
+      dbMap['${_days[i]}_earn'] = state.earns[i];
+      dbMap['${_days[i]}_spend'] = state.spends[i];
+    }
+
+    // Save to DB using the helper function we wrote
+    await DatabaseHelper.instance.updateWeeklyStats(dbMap);
+  }
 }
