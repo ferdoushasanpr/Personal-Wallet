@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../data/database_helper.dart';
 import '../models/account.dart';
 
+// --- State Classes ---
 class WalletState {
   final List<Account> accounts;
   final bool isLoading;
@@ -10,6 +11,7 @@ class WalletState {
   WalletState({this.accounts = const [], this.isLoading = true});
 }
 
+// --- Notifier ---
 class WalletNotifier extends StateNotifier<WalletState> {
   WalletNotifier() : super(WalletState()) {
     loadAccounts();
@@ -160,21 +162,25 @@ class WalletNotifier extends StateNotifier<WalletState> {
     final updatedSource = account.copyWith(currentBalance: revertedBalance);
     await db.updateAccount(updatedSource);
 
+    // 3. Refresh state
     await loadAccounts();
   }
 }
 
+// --- Providers ---
 final walletProvider = StateNotifierProvider<WalletNotifier, WalletState>((
   ref,
 ) {
   return WalletNotifier();
 });
 
+// A provider to fetch transactions for a specific account dynamically
 final transactionsProvider =
     FutureProvider.family<List<TransactionRecord>, String>((
       ref,
       accountId,
     ) async {
+      // Watch wallet provider to re-fetch when accounts change (implies transactions might have changed)
       ref.watch(walletProvider);
       return await DatabaseHelper.instance.getRecordsByAccount(accountId);
     });
