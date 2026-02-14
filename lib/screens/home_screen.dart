@@ -5,6 +5,7 @@ import 'package:personalwallet/providers/account_provider.dart';
 import 'package:personalwallet/constant/colors.dart';
 import 'package:personalwallet/screens/add_account_screen.dart';
 import 'package:personalwallet/screens/weekly_calculation_screen.dart';
+import 'package:personalwallet/screens/account_details_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -149,7 +150,13 @@ class HomeScreen extends ConsumerWidget {
 
                         final account = walletState.accounts[index];
                         return GestureDetector(
-                          onTap: () => {},
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  AccountDetailsScreen(account: account),
+                            ),
+                          ),
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
