@@ -6,6 +6,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:personalwallet/providers/account_provider.dart';
 import 'package:personalwallet/constant/colors.dart';
 import 'package:personalwallet/screens/add_account_screen.dart';
+import 'package:personalwallet/screens/add_transaction_screen.dart';
 import 'package:personalwallet/utilities/today_date.dart';
 
 class AccountDetailsScreen extends ConsumerWidget {
@@ -262,6 +263,16 @@ class AccountDetailsScreen extends ConsumerWidget {
               title: const Text("Edit Record"),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddTransactionScreen(
+                      sourceAccount:
+                          account, // Passing the record triggers "Edit Mode"
+                      record: record,
+                    ),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -311,7 +322,12 @@ class AccountDetailsScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => {},
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AddTransactionScreen(sourceAccount: latestAccount),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
