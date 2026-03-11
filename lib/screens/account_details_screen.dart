@@ -17,7 +17,6 @@ class AccountDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final transactionsAsync = ref.watch(transactionsProvider(account.id));
 
-    // We need to fetch the latest version of the account from the main provider in case balance updated
     final latestAccount = ref
         .watch(walletProvider)
         .accounts
@@ -35,7 +34,6 @@ class AccountDetailsScreen extends ConsumerWidget {
         );
       }
 
-      // 1. Group data by category and calculate total
       final Map<String, double> dataMap = {};
       double totalExpense = 0;
       for (var r in expenses) {
@@ -43,7 +41,6 @@ class AccountDetailsScreen extends ConsumerWidget {
         totalExpense += r.amount;
       }
 
-      // 2. Define a consistent color palette for categories
       final List<Color> colorPalette = [
         Colors.greenAccent,
         Colors.deepOrange,
@@ -55,13 +52,12 @@ class AccountDetailsScreen extends ConsumerWidget {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E), // Dark card background
+          color: const Color(0xFF1E1E1E),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Section
             Text(
               "Expenses structure",
               style: TextStyle(
@@ -80,7 +76,7 @@ class AccountDetailsScreen extends ConsumerWidget {
               ),
             ),
             Text(
-              "\$ ${NumberFormat("#,##0.00").format(totalExpense)}",
+              "BDT ${NumberFormat("#,##0.00").format(totalExpense)}",
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -88,7 +84,6 @@ class AccountDetailsScreen extends ConsumerWidget {
               ),
             ),
 
-            // The Chart Section
             const SizedBox(height: 20),
             SizedBox(
               height: 200,
@@ -97,21 +92,19 @@ class AccountDetailsScreen extends ConsumerWidget {
                   PieChart(
                     PieChartData(
                       sectionsSpace: 2,
-                      centerSpaceRadius: 60, // Creates the "Donut" hole
+                      centerSpaceRadius: 60,
                       startDegreeOffset: -90,
                       sections: dataMap.entries.map((e) {
                         final index = dataMap.keys.toList().indexOf(e.key);
                         return PieChartSectionData(
                           value: e.value,
-                          title:
-                              "", // No text inside segments for a cleaner look
+                          title: "",
                           radius: 25,
                           color: colorPalette[index % colorPalette.length],
                         );
                       }).toList(),
                     ),
                   ),
-                  // Center Label
                   Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -121,7 +114,7 @@ class AccountDetailsScreen extends ConsumerWidget {
                           style: TextStyle(color: Colors.white54, fontSize: 16),
                         ),
                         Text(
-                          "\$ ${totalExpense.toInt()}",
+                          "BDT ${totalExpense.toInt()}",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -135,7 +128,6 @@ class AccountDetailsScreen extends ConsumerWidget {
               ),
             ),
 
-            // Custom Legend Section
             const SizedBox(height: 20),
             Wrap(
               spacing: 16,
@@ -198,8 +190,8 @@ class AccountDetailsScreen extends ConsumerWidget {
               ),
               onPressed: () {
                 ref.read(walletProvider.notifier).deleteAccount(account.id);
-                Navigator.pop(ctx); // Close Dialog
-                Navigator.pop(context); // Return to Home Screen
+                Navigator.pop(ctx);
+                Navigator.pop(context);
               },
               child: const Text(
                 "Delete",
@@ -267,8 +259,7 @@ class AccountDetailsScreen extends ConsumerWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => AddTransactionScreen(
-                      sourceAccount:
-                          account, // Passing the record triggers "Edit Mode"
+                      sourceAccount: account,
                       record: record,
                     ),
                   ),
@@ -333,11 +324,10 @@ class AccountDetailsScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Balance Header
             Text("Current Balance", style: TextStyle(color: Colors.grey[400])),
             Text(
               NumberFormat.currency(
-                symbol: "\$",
+                symbol: "BDT",
               ).format(latestAccount.currentBalance),
               style: const TextStyle(
                 fontSize: 36,
@@ -347,14 +337,11 @@ class AccountDetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // Pie Chart (Expenses last 30 days)
             transactionsAsync.when(
               data: (records) {
                 return Column(
                   children: [
-                    _buildExpenseStructure(
-                      records,
-                    ), // <--- Insert the new method here
+                    _buildExpenseStructure(records),
                     const SizedBox(height: 24),
                   ],
                 );
@@ -364,7 +351,6 @@ class AccountDetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // Recent Transactions List
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -394,8 +380,6 @@ class AccountDetailsScreen extends ConsumerWidget {
                       amountColor = AppColors.error;
                       prefix = "-";
                     } else {
-                      // Transfer
-                      // If we are looking at the source account, it's a minus, if target, it's a plus
                       if (r.accountId == account.id) {
                         amountColor = Colors.orange;
                         prefix = "-";
@@ -405,20 +389,15 @@ class AccountDetailsScreen extends ConsumerWidget {
                       }
                     }
 
-                    // Inside your ListView.builder itemBuilder:
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ListTile(
-                        onLongPress: () => _showRecordOptions(
-                          context,
-                          ref,
-                          r,
-                        ), // Trigger options
+                        onLongPress: () => _showRecordOptions(context, ref, r),
                         leading: CircleAvatar(
-                          backgroundColor: amountColor.withOpacity(0.2),
+                          backgroundColor: amountColor.withValues(alpha: 0.2),
                           child: Icon(
                             r.type == RecordType.transfer
                                 ? Icons.swap_horiz
@@ -443,7 +422,7 @@ class AccountDetailsScreen extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "$prefix\$${r.amount.toStringAsFixed(2)}",
+                              "$prefix BDT${r.amount.toStringAsFixed(2)}",
                               style: TextStyle(
                                 color: amountColor,
                                 fontWeight: FontWeight.bold,
@@ -462,7 +441,7 @@ class AccountDetailsScreen extends ConsumerWidget {
                 );
               },
               loading: () => const SizedBox(),
-              error: (_, __) => const SizedBox(),
+              error: (_, _) => const SizedBox(),
             ),
           ],
         ),

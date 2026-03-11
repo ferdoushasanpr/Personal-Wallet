@@ -9,7 +9,6 @@ class WeeklyCalcState {
     this.isLoading = false,
   });
 
-  // Helper to create a copy of the state with updated values
   WeeklyCalcState copyWith({
     List<double>? earns,
     List<double>? spends,

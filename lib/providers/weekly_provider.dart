@@ -21,7 +21,6 @@ class WeeklyCalcNotifier extends StateNotifier<WeeklyCalcState> {
 
   final List<String> _days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
-  // Matches your loadAccounts() pattern
   Future<void> loadWeeklyData() async {
     final data = await DatabaseHelper.instance.getWeeklyStats();
 
@@ -44,7 +43,6 @@ class WeeklyCalcNotifier extends StateNotifier<WeeklyCalcState> {
     }
   }
 
-  // Method to update a single value (Earn or Spend) for a specific day
   Future<void> updateDayValue(int index, double value, bool isEarn) async {
     final newEarns = [...state.earns];
     final newSpends = [...state.spends];
@@ -55,21 +53,17 @@ class WeeklyCalcNotifier extends StateNotifier<WeeklyCalcState> {
       newSpends[index] = value;
     }
 
-    // Update UI State
     state = state.copyWith(earns: newEarns, spends: newSpends);
 
-    // Prepare data for DatabaseHelper
     Map<String, dynamic> dbMap = {};
     for (int i = 0; i < 7; i++) {
       dbMap['${_days[i]}_earn'] = state.earns[i];
       dbMap['${_days[i]}_spend'] = state.spends[i];
     }
 
-    // Save to DB using the helper function we wrote
     await DatabaseHelper.instance.updateWeeklyStats(dbMap);
   }
 
-  // Matches your reset/delete pattern
   Future<void> resetCalculator() async {
     await DatabaseHelper.instance.deleteWeeklyStats();
     state = WeeklyCalcState(

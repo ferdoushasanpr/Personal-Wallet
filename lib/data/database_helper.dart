@@ -65,7 +65,6 @@ class DatabaseHelper {
 ''');
   }
 
-  // CRUD Operations
   Future<void> insertAccount(Account account) async {
     final db = await instance.database;
     await db.insert(
@@ -129,7 +128,6 @@ class DatabaseHelper {
 
   Future<List<TransactionRecord>> getRecordsByAccount(String accountId) async {
     final db = await instance.database;
-    // Get records where this account is either the source OR the target (for incoming transfers)
     final DateTime thirtyDaysAgo = DateTime.now().subtract(
       const Duration(days: 30),
     );
@@ -146,7 +144,6 @@ class DatabaseHelper {
     return result.map((json) => TransactionRecord.fromMap(json)).toList();
   }
 
-  // Fetch the single row of calculator data
   Future<Map<String, dynamic>?> getWeeklyStats() async {
     final db = await instance.database;
     final res = await db.query(
@@ -157,10 +154,8 @@ class DatabaseHelper {
     return res.isNotEmpty ? res.first : null;
   }
 
-  // Update or Insert the stats
   Future<void> updateWeeklyStats(Map<String, dynamic> data) async {
     final db = await instance.database;
-    // We always use ID 1 to ensure we only ever have one "current" week
     Map<String, dynamic> row = Map.of(data);
     row['id'] = 1;
 
@@ -171,7 +166,6 @@ class DatabaseHelper {
     );
   }
 
-  // Clear/Reset the stats
   Future<void> deleteWeeklyStats() async {
     final db = await instance.database;
     await db.delete('weekly_calculator', where: 'id = ?', whereArgs: [1]);

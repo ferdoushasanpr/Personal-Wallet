@@ -101,16 +101,18 @@ class WalletNotifier extends StateNotifier<WalletState> {
     );
     double balanceAfterRevert = account.currentBalance;
 
-    if (oldRecord.type == RecordType.income)
+    if (oldRecord.type == RecordType.income) {
       balanceAfterRevert -= oldRecord.amount;
-    else
+    } else {
       balanceAfterRevert += oldRecord.amount;
+    }
 
     double finalBalance = balanceAfterRevert;
-    if (newRecord.type == RecordType.income)
+    if (newRecord.type == RecordType.income) {
       finalBalance += newRecord.amount;
-    else
+    } else {
       finalBalance -= newRecord.amount;
+    }
 
     await DatabaseHelper.instance.updateRecord(newRecord);
     await DatabaseHelper.instance.updateAccount(

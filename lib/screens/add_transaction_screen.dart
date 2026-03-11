@@ -70,7 +70,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              // Type Selector
               Row(
                 children: [
                   Expanded(
@@ -105,14 +104,14 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                 decoration: const InputDecoration(
                   labelText: "Amount",
                   border: OutlineInputBorder(),
-                  prefixText: "\$ ",
+                  prefixText: "BDT ",
                 ),
                 validator: (v) => v!.isEmpty ? "Required" : null,
               ),
               const SizedBox(height: 16),
               if (_type != RecordType.transfer)
                 DropdownButtonFormField<String>(
-                  value:
+                  initialValue:
                       (_type == RecordType.income
                           ? _incomeCategories.contains(_categoryCtrl.text)
                           : _expenseCategories.contains(_categoryCtrl.text))
@@ -123,7 +122,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.category_outlined),
                   ),
-                  // Switch the list based on whether it's Income or Expense
                   items:
                       (_type == RecordType.income
                               ? _incomeCategories
@@ -140,12 +138,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   },
                   validator: (v) =>
                       v == null ? "Please select a category" : null,
-                  dropdownColor: AppColors.surface, // Matches your dark theme
+                  dropdownColor: AppColors.surface,
                 ),
               if (_type == RecordType.transfer) ...[
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _targetAccountId,
+                  initialValue: _targetAccountId,
                   decoration: const InputDecoration(
                     labelText: "To Account",
                     border: OutlineInputBorder(),
@@ -168,11 +166,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // Create the record object
                     final recordData = TransactionRecord(
-                      id:
-                          widget.record?.id ??
-                          const Uuid().v4(), // CRITICAL: Use old ID if editing
+                      id: widget.record?.id ?? const Uuid().v4(),
                       accountId: widget.sourceAccount.id,
                       targetAccountId: _type == RecordType.transfer
                           ? _targetAccountId
@@ -186,12 +181,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     );
 
                     if (widget.record != null) {
-                      // USE UPDATE METHOD
                       await ref
                           .read(walletProvider.notifier)
                           .updateTransaction(widget.record!, recordData);
                     } else {
-                      // USE ADD METHOD
                       await ref
                           .read(walletProvider.notifier)
                           .addTransaction(recordData);
@@ -216,7 +209,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.2) : Colors.transparent,
+          color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
           border: Border.all(color: isSelected ? color : Colors.grey),
           borderRadius: BorderRadius.circular(8),
         ),

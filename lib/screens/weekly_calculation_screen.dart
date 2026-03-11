@@ -85,11 +85,9 @@ class _WeeklyCalculationScreenState
 
   @override
   Widget build(BuildContext context) {
-    // Watch the provider to update the Summary Header automatically
     final calcState = ref.watch(weeklyCalcProvider);
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-    // Calculate totals from the global state
     double totalEarn = calcState.earns.fold(0, (a, b) => a + b);
     double totalSpend = calcState.spends.fold(0, (a, b) => a + b);
     double totalSave = totalEarn - totalSpend;
@@ -101,7 +99,6 @@ class _WeeklyCalculationScreenState
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Colors.orangeAccent),
             onPressed: () {
-              // Confirmation Dialog
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
@@ -131,7 +128,6 @@ class _WeeklyCalculationScreenState
       ),
       body: Column(
         children: [
-          // Summary Header
           Container(
             padding: const EdgeInsets.all(20),
             color: AppColors.surface,
@@ -169,7 +165,6 @@ class _WeeklyCalculationScreenState
               itemCount: 7,
               separatorBuilder: (_, __) => const Divider(),
               itemBuilder: (ctx, i) {
-                // Get live saving calculation for each row
                 final dailySave = calcState.earns[i] - calcState.spends[i];
 
                 return Padding(

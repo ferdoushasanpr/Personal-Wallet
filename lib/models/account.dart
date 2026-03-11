@@ -3,7 +3,7 @@ enum RecordType { income, expense, transfer }
 class Account {
   final String id;
   final String name;
-  final String type; // Cash, Bank, etc.
+  final String type;
   final int colorValue;
   final double initialBalance;
   final double currentBalance;
@@ -61,7 +61,7 @@ class Account {
 class TransactionRecord {
   final String id;
   final String accountId;
-  final String? targetAccountId; // Nullable, only for transfers
+  final String? targetAccountId;
   final double amount;
   final RecordType type;
   final String category;
@@ -83,7 +83,7 @@ class TransactionRecord {
       'accountId': accountId,
       'targetAccountId': targetAccountId,
       'amount': amount,
-      'type': type.index, // Store enum as int
+      'type': type.index,
       'category': category,
       'date': date.toIso8601String(),
     };

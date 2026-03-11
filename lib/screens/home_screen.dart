@@ -27,7 +27,6 @@ class HomeScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Total Balance Card
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
@@ -35,7 +34,7 @@ class HomeScreen extends ConsumerWidget {
                       gradient: LinearGradient(
                         colors: [
                           AppColors.primary,
-                          AppColors.primary.withOpacity(0.7),
+                          AppColors.primary.withValues(alpha: 0.7),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -43,7 +42,7 @@ class HomeScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: AppColors.primary.withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 5),
                         ),
@@ -58,7 +57,7 @@ class HomeScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         Text(
                           NumberFormat.currency(
-                            symbol: "\$",
+                            symbol: "BDT",
                           ).format(totalBalance),
                           style: const TextStyle(
                             color: Colors.white,
@@ -71,7 +70,6 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Action Buttons
                   Row(
                     children: [
                       Expanded(
@@ -100,7 +98,6 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Accounts Grid
                   const Text(
                     "Accounts",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -118,7 +115,6 @@ class HomeScreen extends ConsumerWidget {
                       itemCount: walletState.accounts.length + 1,
                       itemBuilder: (context, index) {
                         if (index == walletState.accounts.length) {
-                          // Add Account Card
                           return GestureDetector(
                             onTap: () => Navigator.push(
                               context,
@@ -160,12 +156,14 @@ class HomeScreen extends ConsumerWidget {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Color(account.colorValue).withOpacity(0.2),
+                              color: Color(
+                                account.colorValue,
+                              ).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: Color(
                                   account.colorValue,
-                                ).withOpacity(0.5),
+                                ).withValues(alpha: 0.5),
                                 width: 1,
                               ),
                             ),
@@ -191,7 +189,7 @@ class HomeScreen extends ConsumerWidget {
                                     const SizedBox(height: 4),
                                     Text(
                                       NumberFormat.currency(
-                                        symbol: "\$",
+                                        symbol: "BDT",
                                       ).format(account.currentBalance),
                                       style: const TextStyle(
                                         fontSize: 14,
